@@ -1,0 +1,272 @@
+// ++=========================================================================++
+// || vBadvanced Dynamics v2.1.2 (vB 4.0 - 4.1) - 69527
+// || © 2003-2011 vBadvanced.com - All Rights Reserved
+// || This file may not be redistributed in whole or significant part.
+// || http://vbadvanced.com
+// || Downloaded 15:08, Fri Aug 26th 2011
+// || 822069527_705441039494
+// ++ ========================================================================++
+
+// ##### Open IM Window #######################################################
+function vba_imwindow(imtype, userid, width, height)
+{
+	return openWindow(VB_HOMEURL + '/sendmessage.php?' + SESSIONURL + 'do=im&type=' + imtype + '&u=' + userid, width, height);
+}
+
+// ##### Open Rating Window ###################################################
+function open_rating_window(entryid)
+{
+	window.open(DYNA_HOMEURL + '/misc.php?do=viewratings&entryid=' + entryid, 'rating', 'toolbar=no, scrollbars=yes, resizable=yes, width=240, height=320');
+}
+
+// ##### Favorites ############################################################
+function vba_add_fav(entryid, modid)
+{
+	xml_sender = new vB_AJAX_Handler(true);
+	xml_sender.init();
+
+	if(!is_ajax_compatible())
+	{
+		return true;
+	}
+
+	if (modid == undefined)
+	{
+		modid = 0;
+	}
+
+	xml_sender.onreadystatechange(fetch_vba_add_fav);
+	xml_sender.send(DYNA_HOMEURL + '/ajax.php', 'do=favorite&entryid=' + PHP.urlencode(entryid) + '&modid=' + PHP.urlencode(modid));
+	return false;
+}
+
+function fetch_vba_add_fav()
+{
+	if (xml_sender.handler.readyState == 4 && xml_sender.handler.status == 200)
+	{
+		var ajax_response = xml_sender.handler.responseXML;
+
+		if (ajax_response)
+		{
+			var entryid = ajax_response.getElementsByTagName('entryid')[0].firstChild.nodeValue;
+			var modid = ajax_response.getElementsByTagName('modid')[0].firstChild.nodeValue;
+			var phrase = ajax_response.getElementsByTagName('phrase')[0].firstChild.nodeValue;
+			var newphrase = ajax_response.getElementsByTagName('newphrase')[0].firstChild.nodeValue;
+			var favimg = ajax_response.getElementsByTagName('favimg')[0].firstChild.nodeValue;
+
+			if (phrase)
+			{
+				if (modid != 0)
+				{
+					modid = '_m' + modid;
+				}
+				else
+				{
+					modid = '';
+				}
+
+				fetch_object('fav_' + entryid + modid).innerHTML = newphrase;
+				fetch_object('favimg_' + entryid + modid).style.display = favimg;
+
+				alert(phrase);
+			}
+		}
+	}
+}
+
+// ##### Subscriptions ############################################################
+function vba_add_subscr(entryid, modid)
+{
+	xml_sender = new vB_AJAX_Handler(true);
+	xml_sender.init();
+
+	if(!is_ajax_compatible())
+	{
+		return true;
+	}
+
+	if (modid == undefined)
+	{
+		modid = 0;
+	}
+
+	xml_sender.onreadystatechange(fetch_vba_add_subscr);
+	xml_sender.send(DYNA_HOMEURL + '/ajax.php', "do=subscribe&entryid=" + PHP.urlencode(entryid) + "&modid=" + PHP.urlencode(modid));
+	return false;
+}
+
+// ##### Subscriptions ############################################################
+function vba_add_subscr_cat(catid, entryuserid)
+{
+	xml_sender = new vB_AJAX_Handler(true);
+	xml_sender.init();
+
+	if(!is_ajax_compatible())
+	{
+		return true;
+	}
+
+	if (entryuserid == undefined)
+	{
+		entryuserid = 0;
+	}
+
+	xml_sender.onreadystatechange(fetch_vba_add_subscr);
+	xml_sender.send(DYNA_HOMEURL + '/ajax.php', "do=subscribe&type=cat&catid=" + PHP.urlencode(catid) + "&entryuserid=" + PHP.urlencode(entryuserid));
+	return false;
+}
+
+function fetch_vba_add_subscr()
+{
+	if (xml_sender.handler.readyState == 4 && xml_sender.handler.status == 200)
+	{
+		var ajax_response = xml_sender.handler.responseXML;
+
+		if (ajax_response)
+		{
+			var entryid = ajax_response.getElementsByTagName('entryid')[0].firstChild.nodeValue;
+			var modid = ajax_response.getElementsByTagName('modid')[0].firstChild.nodeValue;
+			var phrase = ajax_response.getElementsByTagName('phrase')[0].firstChild.nodeValue;
+			var newphrase = ajax_response.getElementsByTagName('newphrase')[0].firstChild.nodeValue;
+			var subtype = ajax_response.getElementsByTagName('type')[0].firstChild.nodeValue;
+			if (subtype != 'cat')
+			{
+				var subimg = ajax_response.getElementsByTagName('subimg')[0].firstChild.nodeValue;
+			}
+
+			if (phrase)
+			{
+				if (subtype == 'cat')
+				{
+					fetch_object('subscr_cat').innerHTML = newphrase;
+				}
+				else
+				{
+					if (modid != 0)
+					{
+						modid = '_m' + modid;
+					}
+					else
+					{
+						modid = '';
+					}
+
+					fetch_object('subscr_' + entryid + modid).innerHTML = newphrase;
+					fetch_object('subimg_' + entryid + modid).style.display = subimg;
+				}
+
+				alert(phrase);
+			}
+		}
+	}
+}
+
+// ##### Ratings ##############################################################
+function int_e_rating(entryid, modid)
+{
+	xml_sender = new vB_AJAX_Handler(true);
+	xml_sender.init();
+
+	if(!is_ajax_compatible())
+	{
+		return true;
+	}
+
+	if (modid != undefined && modid != '' && modid != 0)
+	{
+		modid = '_m' + modid;
+	}
+	else
+	{
+		modid = '';
+	}
+
+	var sbutton = fetch_object('srating_' + entryid + modid);
+	var newbutton = document.createElement('input');
+	newbutton.type = 'button';
+	newbutton.className = sbutton.className;
+	newbutton.value = sbutton.value;
+	newbutton.onclick = vBa_Rate_Entry.prototype.formsubmit;
+
+	sbutton.parentNode.insertBefore(newbutton, sbutton);
+	sbutton.parentNode.removeChild(sbutton);
+}
+
+function vBa_Rate_Entry(formobj)
+{
+	this.formobj = formobj;
+
+	this.entryid = this.formobj.entryid.value;
+
+	this.divid = "entryrating_" + this.entryid;
+
+	if (this.formobj.modid != undefined && this.formobj.modid.value)
+	{
+		this.divid = this.divid + '_m' + this.formobj.modid.value;
+	}
+
+	var me = this;
+
+	YAHOO.vBulletin.vBPopupMenu.close_all();
+
+	this.fetch_rating_result = function()
+	{
+		if (me.xml_sender.handler.readyState == 4 && me.xml_sender.handler.status == 200)
+		{
+			var ajax_response = me.xml_sender.handler.responseXML;
+			if (ajax_response)
+			{
+				if (ajax_response.getElementsByTagName('error').length)
+				{
+					alert(ajax_response.getElementsByTagName('error')[0].firstChild.nodeValue);
+				}
+				else
+				{
+					if (ajax_response.getElementsByTagName('message').length)
+					{
+						alert(ajax_response.getElementsByTagName('message')[0].firstChild.nodeValue);
+					}
+					if (ajax_response.getElementsByTagName('rating').length)
+					{
+						if (ratingDiv = document.getElementById(me.divid))
+						{
+							ratingDiv.className = 'vba_rating' + ajax_response.getElementsByTagName('rating')[0].firstChild.nodeValue;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+vBa_Rate_Entry.prototype.formsubmit = function()
+{
+	var vBa_Rate = new vBa_Rate_Entry(this.form);
+	vBa_Rate.init();
+	return false;
+}
+
+vBa_Rate_Entry.prototype.init = function()
+{
+	var voteopts = this.formobj.vote;
+
+	for (var i = 0; i < voteopts.length; i++)
+	{
+		if (voteopts[i].checked)
+		{
+			this.vote = voteopts[i].value;
+		}
+	}
+
+	this.xml_sender = new vB_AJAX_Handler(true);
+	this.xml_sender.init();
+
+	if(!is_ajax_compatible())
+	{
+		return true;
+	}
+
+	this.xml_sender.onreadystatechange(this.fetch_rating_result);
+	this.xml_sender.send(DYNA_HOMEURL + '/ajax.php', "do=rateentry&entryid=" + PHP.urlencode(this.entryid) + "&vote=" + PHP.urlencode(this.vote));
+	return false;
+}
