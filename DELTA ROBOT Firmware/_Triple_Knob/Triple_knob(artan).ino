@@ -1,13 +1,8 @@
 /*
-
  Controlling a servo position using a potentiometer (variable resistor)
-
  by Michal Rinott <http://people.interaction-ivrea.it/m.rinott>
-
  modified on 30 Mar 2019
-
  by Halil ibrahim ilhan
-
 */
 
 #include <Servo.h>
@@ -48,14 +43,15 @@ void loop() {
 
   val = map(val, 0, 1023, 0, 180);     // scale it to use it with the servo (value between 0 and 180)
   
-  newVal += Int(val/dc);
+  newVal += val/dc;
   
 
   val1 = analogRead(potpin1);            // reads the value of the potentiometer (value between 0 and 1023)
 
   val1 = map(val1, 0, 1023, 0, 180);     // scale it to use it with the servo (value between 0 and 180)
-  newVal1 += Int(val1/dc);
-  if(newVal1=>0&&newVal1=<180&&newVal=>0&&newVal=<180){
+  newVal1 += val1/dc;
+  
+  if(newVal1>=0 && newVal1<=180 && newVal>=0 && newVal<=180){
     val1 = newVal1;
     val = newVal;
    }
