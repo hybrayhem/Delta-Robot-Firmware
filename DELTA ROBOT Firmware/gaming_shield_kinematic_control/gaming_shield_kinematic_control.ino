@@ -20,7 +20,7 @@ float alfa1;
 float alfa2;
 float alfa3;
 
-float dc = 6.0; // divide constant
+float dc = 10.0; // divide constant
 
 float x = 0;
 float y = 0;
@@ -86,24 +86,28 @@ void loop() {
   //myservo2.write(val2);                  // sets the servo position according to the scaled value
   //delay(15);                           // waits for the servo to get there
 
-  position_status = delta_calcInverse(x, y, z, alfa1, alfa2, alfa3);
-  Serial.println(position_status);
+  position_status = delta_calcInverse(newX, newY, newZ, alfa1, alfa2, alfa3);
   
-  if(position_status == 0){
+  
+  if(position_status == 0 && alfa1 <136.0 && alfa1>-136 && alfa2 <136.0 && alfa2>-136 && alfa3 <136.0 && alfa3>-136){
 //    Serial.println("position changed");
     x = newX;
     y = newY;
     z = newZ;
+  Serial.println(position_status);
   Serial.println("                                                                         ");
   Serial.println("alfa1: "+ String(alfa1)+" alfa2: "+ String(alfa2)+" alfa3: "+ String(alfa3));
   Serial.println("                                                                         ");
-
+    Serial.println("x: "+ String(x)+" y: "+ String(y)+" z: "+ String(z));
+  myservo.write(alfa1); 
+  myservo1.write(alfa2); 
+  myservo2.write(alfa3); 
     }
 //  Serial.println("                                                                         ");
 //  Serial.println("alfa1: "+ String(alfa1)+" alfa2: "+ String(alfa2)+" alfa3: "+ String(alfa3));
 //  Serial.println("                                                                         ");
 
-  delay(250);
+  //delay(10);
 }
 
 
